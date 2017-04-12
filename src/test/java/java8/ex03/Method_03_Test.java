@@ -20,10 +20,17 @@ public class Method_03_Test {
 
         // TODO créer une méthode statique IDao getDefaultInstance()
         // TODO cette méthode retourne une instance de la classe DaoA
+        
+        static IDao getDefaultInstance(){
+        	
+        	DaoA a  = new DaoA();
+        	
+        	return a;
+        }
     }
     // end::IDao[]
 
-    class DaoA implements IDao {
+    static class DaoA implements IDao {
 
         List<Person> people = Data.buildPersonList(20);
 
@@ -37,7 +44,7 @@ public class Method_03_Test {
     @Test
     public void test_getDefaultInstance() throws Exception {
         // TODO invoquer la méthode getDefaultInstance() pour que le test soit passant
-        IDao result = null;
+        IDao result = IDao.getDefaultInstance();
 
         assertThat(result.findAll(), hasSize(20));
     }
