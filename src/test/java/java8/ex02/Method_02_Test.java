@@ -24,7 +24,7 @@ public class Method_02_Test {
         
         default String format(){
         	
-        	return "["+findAll().size()+"persons"+"]";
+        	return "["+findAll().size()+"persons]";
         	
         }
     }
@@ -46,7 +46,7 @@ public class Method_02_Test {
         // TODO l'implémentation réutilise la méthode format() de l'interface
         
         @Override public String format(){
-        	return "DaoA"+"["+findAll().size()+" persons"+"]";
+        	return "DaoA"+IDao.super.format();
         }
 
     }
