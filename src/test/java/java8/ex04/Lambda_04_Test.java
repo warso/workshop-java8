@@ -1,9 +1,12 @@
 package java8.ex04;
 
 
+import java8.data.Account;
 import java8.data.Data;
 import java8.data.Person;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,55 +17,63 @@ import java.util.List;
  */
 public class Lambda_04_Test {
 
-    // tag::interfaces[]
-    interface GenericPredicate<T> {
-        // TODO
-    }
+	// tag::interfaces[]
+		interface GenericPredicate<T> {
+			boolean test(T entity);
+		}
 
-    interface GenericMapper<T, E> {
-        // TODO
-    }
+		interface GenericMapper<T, E> {
+			E map(T entity);
+		}
 
-    interface Processor<T> {
-        // TODO
-    }
-    // end::interfaces[]
+		interface Processor<T> {
+			void process(T entity);
+		}
+		// end::interfaces[]
 
-    // tag::FuncCollection[]
-    class FuncCollection<T> {
+		// tag::FuncCollection[]
+		class FuncCollection<T> {
 
-        private Collection<T> list = new ArrayList<>();
+			private Collection<T> list = new ArrayList<>();
 
-        public void add(T a) {
-            list.add(a);
-        }
+			public void add(T a) {
+				list.add(a);
+			}
 
-        public void addAll(Collection<T> all) {
-            for(T el:all) {
-                list.add(el);
-            }
-        }
-    // end::FuncCollection[]
+			public void addAll(Collection<T> all) {
+				for (T el : all) {
+					list.add(el);
+				}
+			}
+			// end::FuncCollection[]
 
-        // tag::methods[]
-        private FuncCollection<T> filter(GenericPredicate<T> predicate) {
-            FuncCollection<T> result = new FuncCollection<>();
-            // TODO
-            return result;
-        }
+			// tag::methods[]
+			private FuncCollection<T> filter(GenericPredicate<T> predicate) {
+				FuncCollection<T> result = new FuncCollection<>();
+				for (T entity : list) {
+					if (predicate.test(entity)) {
+						result.add(entity);
+					}
+				}
+				return result;
+			}
 
-        private <E> FuncCollection<E> map(GenericMapper<T, E> mapper) {
-            FuncCollection<E> result = new FuncCollection<>();
-            // TODO
-            return result;
-        }
+			private <E> FuncCollection<E> map(GenericMapper<T, E> mapper) {
+				FuncCollection<E> result = new FuncCollection<>();
+				for (T entity : list) {
+					result.add(mapper.map(entity));
+				}
+				return result;
+			}
 
-        private void forEach(Processor<T> processor) {
-           // TODO
-        }
-        // end::methods[]
+			private void forEach(Processor<T> processor) {
+				for (T entity : list) {
+					processor.process(entity);
+				}
+			}
+			// end::methods[]
 
-    }
+		}
 
 
 
@@ -76,12 +87,21 @@ public class Lambda_04_Test {
 
         personFuncCollection
                 // TODO filtrer, ne garder uniquement que les personnes ayant un age > 50
-                .filter(null)
+                .filter(p -> p.getAge()>50)
                 // TODO transformer la liste de personnes en liste de comptes. Un compte a par défaut un solde à 1000.
-                .map(null)
+                .map(p->{
+                	Account acc = new Account();
+                	acc.setOwner(p);
+                	acc.setBalance(1000);
+                	return acc;
+                }
+                )
                 // TODO vérifier que chaque compte a un solde à 1000.
                 // TODO vérifier que chaque titulaire de compte a un age > 50
-                .forEach(null);
+                .forEach(acc-> {
+                	assertTrue(acc.getBalance()==1000);
+                	assertTrue(acc.getOwner().getAge()>50);
+                });
     }
     // end::test_filter_map_forEach[]
 
@@ -95,23 +115,31 @@ public class Lambda_04_Test {
 
         // TODO créer un variable filterByAge de type GenericPredicate
         // TODO filtrer, ne garder uniquement que les personnes ayant un age > 50
-        // ??? filterByAge = ???;
+         GenericPredicate<Person> filterByAge = p->p.getAge()>50;
 
         // TODO créer un variable mapToAccount de type GenericMapper
         // TODO transformer la liste de personnes en liste de comptes. Un compte a par défaut un solde à 1000.
-        // ??? mapToAccount = ???;
+        GenericMapper<Person, Account> mapToAccount = p-> {
+        	Account acc =new Account();
+        	acc.setOwner(p);
+        	acc.setBalance(1000);
+        	return acc;
+        };
 
-        // TODO créer un variable verifyAccount de type GenericMapper
+        // TODO créer un variable verifyAccount de type Processor
         // TODO vérifier que chaque compte a un solde à 1000.
         // TODO vérifier que chaque titulaire de compte a un age > 50
-        // ??? verifyAccount = ???;
+         Processor<Account> verifyAccount = acc -> {
+        	 assertTrue(acc.getBalance()==1000);
+        	 assertTrue(acc.getOwner().getAge()>50);
+         };
 
-        /* TODO Décommenter
+//        TODO Décommenter
         personFuncCollection
                 .filter(filterByAge)
                 .map(mapToAccount)
                 .forEach(verifyAccount);
-        */
+        
     }
     // end::test_filter_map_forEach_with_vars[]
 
